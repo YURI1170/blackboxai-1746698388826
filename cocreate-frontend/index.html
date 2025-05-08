@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>CoCreate - Dashboard</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 font-sans text-gray-900">
+  <header class="bg-white shadow">
+    <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+      <h1 class="text-2xl font-semibold text-indigo-600">CoCreate</h1>
+      <nav class="space-x-4" id="navLinks">
+        <a href="index.html" class="text-indigo-600 font-medium hover:underline">Dashboard</a>
+        <a href="resources.html" class="hover:text-indigo-600">Resources</a>
+        <a href="employees.html" class="hover:text-indigo-600">Employees</a>
+        <a href="schedule.html" class="hover:text-indigo-600">Schedule</a>
+        <a href="reports.html" class="hover:text-indigo-600">Reports</a>
+        <a href="login.html" class="hover:text-indigo-600">Logout</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container mx-auto px-4 py-8">
+    <h2 class="text-xl font-semibold mb-6">Dashboard Overview</h2>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div class="bg-white rounded-lg shadow p-6">
+        <h3 class="text-lg font-medium mb-2">Stock Level</h3>
+        <p class="text-3xl font-bold text-indigo-600">45</p>
+        <p class="text-gray-600 mt-1">Items below threshold</p>
+      </div>
+      <div class="bg-white rounded-lg shadow p-6">
+        <h3 class="text-lg font-medium mb-2">Revenue Today</h3>
+        <p class="text-3xl font-bold text-green-600">$1,250</p>
+        <p class="text-gray-600 mt-1">Total payments received</p>
+      </div>
+      <div class="bg-white rounded-lg shadow p-6">
+        <h3 class="text-lg font-medium mb-2">Employees Present</h3>
+        <p class="text-3xl font-bold text-yellow-600">12</p>
+        <p class="text-gray-600 mt-1">Checked in currently</p>
+      </div>
+    </div>
+
+    <section class="mt-10">
+      <h3 class="text-lg font-semibold mb-4">Tasks In Progress</h3>
+      <ul class="bg-white rounded-lg shadow divide-y divide-gray-200">
+        <li class="p-4 flex justify-between items-center">
+          <span>Inventory audit</span>
+          <span class="text-sm text-indigo-600 font-semibold">In Progress</span>
+        </li>
+        <li class="p-4 flex justify-between items-center">
+          <span>Schedule update</span>
+          <span class="text-sm text-yellow-500 font-semibold">Pending</span>
+        </li>
+        <li class="p-4 flex justify-between items-center">
+          <span>Monthly report generation</span>
+          <span class="text-sm text-green-600 font-semibold">Completed</span>
+        </li>
+      </ul>
+    </section>
+  </main>
+
+  <footer class="bg-white shadow mt-12 py-4 text-center text-gray-600 text-sm">
+    &copy; 2024 CoCreate. All rights reserved.
+  </footer>
+
+  <script>
+    const userRole = localStorage.getItem('userRole');
+
+    if (!userRole) {
+      alert('You are not logged in. Redirecting to login page.');
+      window.location.href = 'login.html';
+    } else {
+      const nav = document.getElementById('navLinks');
+      // Hide all links initially except logout
+      Array.from(nav.children).forEach(link => {
+        if (link.textContent.trim() !== 'Logout') {
+          link.style.display = 'none';
+        }
+      });
+
+      // Show links based on role
+      if (userRole === 'admin') {
+        // Admin sees all links
+        Array.from(nav.children).forEach(link => {
+          link.style.display = 'inline-block';
+        });
+      } else if (userRole === 'rh_manager') {
+        // RH Manager sees Employees and Schedule
+        nav.querySelector('a[href="employees.html"]').style.display = 'inline-block';
+        nav.querySelector('a[href="schedule.html"]').style.display = 'inline-block';
+      } else if (userRole === 'stock_manager') {
+        // Stock Manager sees Resources only
+        nav.querySelector('a[href="resources.html"]').style.display = 'inline-block';
+      } else if (userRole === 'employee') {
+        // Employee/Intern sees Schedule only
+        nav.querySelector('a[href="schedule.html"]').style.display = 'inline-block';
+      } else {
+        // Unknown role, redirect to login
+        alert('Unknown user role. Redirecting to login.');
+        window.location.href = 'login.html';
+      }
+    }
+  </script>
+</body>
+</html>
