@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>CoCreate - Schedule and Attendance</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 font-sans text-gray-900">
+  <header class="bg-white shadow">
+    <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+      <h1 class="text-2xl font-semibold text-indigo-600">CoCreate</h1>
+      <nav class="space-x-4">
+        <a href="index.html" class="hover:text-indigo-600">Dashboard</a>
+        <a href="resources.html" class="hover:text-indigo-600">Resources</a>
+        <a href="employees.html" class="hover:text-indigo-600">Employees</a>
+        <a href="schedule.html" class="text-indigo-600 font-medium hover:underline">Schedule</a>
+        <a href="reports.html" class="hover:text-indigo-600">Reports</a>
+        <a href="login.html" class="hover:text-indigo-600">Logout</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container mx-auto px-4 py-8">
+    <h2 class="text-xl font-semibold mb-6">Schedule and Attendance</h2>
+
+    <section class="mb-8">
+      <h3 class="text-lg font-semibold mb-4">Create Schedule</h3>
+      <form id="scheduleForm" class="bg-white p-6 rounded-lg shadow space-y-4 max-w-lg">
+        <div>
+          <label for="employeeName" class="block font-medium mb-1">Employee/Intern Name</label>
+          <input type="text" id="employeeName" name="employeeName" required class="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+        </div>
+        <div class="flex space-x-4">
+          <div class="flex-1">
+            <label for="startTime" class="block font-medium mb-1">Start Time</label>
+            <input type="datetime-local" id="startTime" name="startTime" required class="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+          </div>
+          <div class="flex-1">
+            <label for="endTime" class="block font-medium mb-1">End Time</label>
+            <input type="datetime-local" id="endTime" name="endTime" required class="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+          </div>
+        </div>
+        <div>
+          <label for="taskType" class="block font-medium mb-1">Task Type</label>
+          <select id="taskType" name="taskType" required class="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+            <option value="">Select task type</option>
+            <option value="reception">Reception</option>
+            <option value="cleaning">Cleaning</option>
+            <option value="service">Service</option>
+          </select>
+        </div>
+        <button type="submit" class="bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700 transition">Add Schedule</button>
+      </form>
+    </section>
+
+    <section>
+      <h3 class="text-lg font-semibold mb-4">Schedules List</h3>
+      <div class="overflow-x-auto bg-white rounded-lg shadow">
+        <table class="min-w-full divide-y divide-gray-200" id="scheduleTable">
+          <thead class="bg-indigo-50">
+            <tr>
+              <th class="px-6 py-3 text-left text-xs font-medium text-indigo-600 uppercase tracking-wider">Name</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-indigo-600 uppercase tracking-wider">Start Time</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-indigo-600 uppercase tracking-wider">End Time</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-indigo-600 uppercase tracking-wider">Task Type</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-indigo-600 uppercase tracking-wider">Actions</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-gray-100" id="scheduleBody">
+            <!-- Schedules will be dynamically inserted here -->
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const schedules = [];
+
+    function renderSchedules() {
+      const tbody = document.getElementById('scheduleBody');
+      tbody.innerHTML = '';
+      schedules.forEach((schedule, index) => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td class="px-6 py-4 whitespace-nowrap">${schedule.name}</td>
+          <td class="px-6 py-4 whitespace-nowrap">${new Date(schedule.startTime).toLocaleString()}</td>
+          <td class="px-6 py-4 whitespace-nowrap">${new Date(schedule.endTime).toLocaleString()}</td>
+          <td class="px-6 py-4 whitespace-nowrap capitalize">${schedule.taskType}</td>
+          <td class="px-6 py-4 whitespace-nowrap">
+            <button onclick="deleteSchedule(${index})" class="text-red-600 hover:text-red-800"><i class="fas fa-trash-alt"></i></button>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    function deleteSchedule(index) {
+      schedules.splice(index, 1);
+      renderSchedules();
+    }
+
+    document.getElementById('scheduleForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      const name = e.target.employeeName.value.trim();
+      const startTime = e.target.startTime.value;
+      const endTime = e.target.endTime.value;
+      const taskType = e.target.taskType.value;
+
+      if (!name || !startTime || !endTime || !taskType) {
+        alert('Please fill in all fields.');
+        return;
+      }
+
+      schedules.push({ name, startTime, endTime, taskType });
+      renderSchedules();
+      e.target.reset();
+    });
+
+    renderSchedules();
+  </script>
+</body>
+</html>
