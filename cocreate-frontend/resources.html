@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>CoCreate - Resources Management</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 font-sans text-gray-900">
+  <header class="bg-white shadow">
+    <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+      <h1 class="text-2xl font-semibold text-indigo-600">CoCreate</h1>
+      <nav class="space-x-4">
+        <a href="index.html" class="hover:text-indigo-600">Dashboard</a>
+        <a href="resources.html" class="text-indigo-600 font-medium hover:underline">Resources</a>
+        <a href="employees.html" class="hover:text-indigo-600">Employees</a>
+        <a href="schedule.html" class="hover:text-indigo-600">Schedule</a>
+        <a href="reports.html" class="hover:text-indigo-600">Reports</a>
+        <a href="login.html" class="hover:text-indigo-600">Logout</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container mx-auto px-4 py-8">
+    <h2 class="text-xl font-semibold mb-6">Stock and Payments Management</h2>
+
+    <section class="mb-8">
+      <h3 class="text-lg font-semibold mb-4">Manage Articles</h3>
+      <form id="articleForm" class="bg-white p-6 rounded-lg shadow space-y-4 max-w-lg">
+        <div>
+          <label for="articleName" class="block font-medium mb-1">Name</label>
+          <input type="text" id="articleName" name="articleName" required class="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+        </div>
+        <div>
+          <label for="articleType" class="block font-medium mb-1">Type</label>
+          <select id="articleType" name="articleType" required class="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+            <option value="">Select type</option>
+            <option value="coffee">Coffee</option>
+            <option value="snack">Snack</option>
+            <option value="water">Water</option>
+          </select>
+        </div>
+        <div>
+          <label for="articleQuantity" class="block font-medium mb-1">Quantity</label>
+          <input type="number" id="articleQuantity" name="articleQuantity" min="0" required class="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+        </div>
+        <div>
+          <label for="articlePrice" class="block font-medium mb-1">Unit Price ($)</label>
+          <input type="number" id="articlePrice" name="articlePrice" min="0" step="0.01" required class="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+        </div>
+        <div>
+          <label for="articleLocation" class="block font-medium mb-1">Location</label>
+          <input type="text" id="articleLocation" name="articleLocation" required class="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+        </div>
+        <button type="submit" class="bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700 transition">Add Article</button>
+      </form>
+    </section>
+
+    <section>
+      <h3 class="text-lg font-semibold mb-4">Articles List</h3>
+      <div class="overflow-x-auto bg-white rounded-lg shadow">
+        <table class="min-w-full divide-y divide-gray-200" id="articlesTable">
+          <thead class="bg-indigo-50">
+            <tr>
+              <th class="px-6 py-3 text-left text-xs font-medium text-indigo-600 uppercase tracking-wider">Name</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-indigo-600 uppercase tracking-wider">Type</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-indigo-600 uppercase tracking-wider">Quantity</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-indigo-600 uppercase tracking-wider">Unit Price</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-indigo-600 uppercase tracking-wider">Location</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-indigo-600 uppercase tracking-wider">Actions</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-gray-100" id="articlesBody">
+            <!-- Articles will be dynamically inserted here -->
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const articles = [];
+
+    function renderArticles() {
+      const tbody = document.getElementById('articlesBody');
+      tbody.innerHTML = '';
+      articles.forEach((article, index) => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td class="px-6 py-4 whitespace-nowrap">${article.name}</td>
+          <td class="px-6 py-4 whitespace-nowrap capitalize">${article.type}</td>
+          <td class="px-6 py-4 whitespace-nowrap">${article.quantity}</td>
+          <td class="px-6 py-4 whitespace-nowrap">${article.price.toFixed(2)}</td>
+          <td class="px-6 py-4 whitespace-nowrap">${article.location}</td>
+          <td class="px-6 py-4 whitespace-nowrap">
+            <button onclick="deleteArticle(${index})" class="text-red-600 hover:text-red-800"><i class="fas fa-trash-alt"></i></button>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    function deleteArticle(index) {
+      articles.splice(index, 1);
+      renderArticles();
+    }
+
+    document.getElementById('articleForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      const name = e.target.articleName.value.trim();
+      const type = e.target.articleType.value;
+      const quantity = parseInt(e.target.articleQuantity.value, 10);
+      const price = parseFloat(e.target.articlePrice.value);
+      const location = e.target.articleLocation.value.trim();
+
+      if (!name || !type || isNaN(quantity) || isNaN(price) || !location) {
+        alert('Please fill in all fields correctly.');
+        return;
+      }
+
+      articles.push({ name, type, quantity, price, location });
+      renderArticles();
+      e.target.reset();
+    });
+
+    renderArticles();
+  </script>
+</body>
+</html>
